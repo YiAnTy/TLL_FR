@@ -1,4 +1,4 @@
-package com.example.lenovo.makeupapp;
+package bjtu.makeupapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package com.example.lenovo.makeupapp;
+package bjtu.makeupapp;
 
 import org.junit.Test;
 
