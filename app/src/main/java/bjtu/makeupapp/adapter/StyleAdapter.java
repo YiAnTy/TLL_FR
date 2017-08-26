@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -23,9 +24,11 @@ public class StyleAdapter extends RecyclerView.Adapter<StyleAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
+        View styleView;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            styleView=itemView;
             imageView = (ImageView) itemView.findViewById(R.id.make_up_image);
         }
     }
@@ -38,7 +41,18 @@ public class StyleAdapter extends RecyclerView.Adapter<StyleAdapter.ViewHolder> 
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.style_item, parent, false);
-        ViewHolder holder = new ViewHolder(view);
+        final ViewHolder holder = new ViewHolder(view);
+        holder.styleView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int postion = holder.getAdapterPosition();
+                StyleItem styleItem = styleItems.get(postion);
+
+                //TODO 点击选择妆容，在显示界面显示相应妆容
+                Toast.makeText(v.getContext(),"你选择了"+styleItem.getName(),Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
         return holder;
     }
 

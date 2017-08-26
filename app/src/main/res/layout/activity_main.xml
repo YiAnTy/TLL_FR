@@ -5,20 +5,28 @@
     android:orientation="vertical"
     android:weightSum="1">
 
+
     <bjtu.makeupapp.HeaderLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <ImageView
+
+    <FrameLayout
+        android:id="@+id/camera_preview"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:layout_weight="0.53"
-        android:src="@drawable/test" />
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <bjtu.makeupapp.CameraPreview
+            android:id="@+id/my_camera_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
 </LinearLayout>
 
