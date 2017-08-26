@@ -1,4 +1,4 @@
-package bjtu.makeupapp;
+package bjtu.makeupapp.components;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import bjtu.makeupapp.R;
 
 /**
  * Created by lenovo on 2017/8/25.

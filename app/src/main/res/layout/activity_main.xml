@@ -6,7 +6,7 @@
     android:weightSum="1">
 
 
-    <bjtu.makeupapp.HeaderLayout
+    <bjtu.makeupapp.components.HeaderLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
