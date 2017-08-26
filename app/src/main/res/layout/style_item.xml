@@ -1,0 +1,11 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="100dp"
+    android:layout_height="wrap_content">
+<ImageView
+    android:id="@+id/make_up_image"
+    android:layout_width="80dp"
+    android:layout_height="80dp"
+    android:src="@drawable/test_make_up"
+    android:layout_gravity="center_horizontal"/>
+</LinearLayout>
