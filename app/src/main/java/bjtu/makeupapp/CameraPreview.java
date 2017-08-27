@@ -2,6 +2,8 @@ package bjtu.makeupapp;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.hardware.Camera.Size;
@@ -85,6 +87,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.FROYO)
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
 

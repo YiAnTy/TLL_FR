@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bjtu.makeupapp.CameraPreview;
-import bjtu.makeupapp.R;
 import bjtu.makeupapp.adapter.StyleAdapter;
 import bjtu.makeupapp.model.StyleItem;
 
@@ -45,19 +44,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onCreate");
         setContentView(R.layout.activity_main);
 
-        initStyle();
-
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        StyleAdapter styleAdapter = new StyleAdapter(styleItems);
-        recyclerView.setAdapter(styleAdapter);
-
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
+
 
         // 得到屏幕的大小
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -72,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
         defaultCameraId = getDefaultCameraId();
         cameraCurrentlyLocked = defaultCameraId;
 
+        initStyle();
+
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        StyleAdapter styleAdapter = new StyleAdapter(styleItems);
+        recyclerView.setAdapter(styleAdapter);
 
     }
 

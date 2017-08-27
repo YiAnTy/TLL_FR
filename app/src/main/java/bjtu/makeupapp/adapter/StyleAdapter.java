@@ -11,7 +11,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import bjtu.makeupapp.R;
+import bjtu.makeupapp.activity.R;
 import bjtu.makeupapp.model.StyleItem;
 
 /**

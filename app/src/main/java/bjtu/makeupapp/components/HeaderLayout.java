@@ -9,7 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import bjtu.makeupapp.R;
+import bjtu.makeupapp.activity.R;
+
 
 /**
  * Created by lenovo on 2017/8/25.
