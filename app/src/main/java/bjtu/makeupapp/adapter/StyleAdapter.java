@@ -23,8 +23,9 @@ public class StyleAdapter extends RecyclerView.Adapter<StyleAdapter.ViewHolder> 
     private List<StyleItem> styleItems;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+
         View styleView;
+        ImageView imageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -42,6 +43,7 @@ public class StyleAdapter extends RecyclerView.Adapter<StyleAdapter.ViewHolder> 
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.style_item, parent, false);
         final ViewHolder holder = new ViewHolder(view);
+
         holder.styleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

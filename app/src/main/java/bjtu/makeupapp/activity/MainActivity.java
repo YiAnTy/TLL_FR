@@ -3,6 +3,8 @@ package bjtu.makeupapp.activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +12,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -24,20 +29,18 @@ import bjtu.makeupapp.model.StyleItem;
 public class MainActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = "MainActivity";
+
     private List<StyleItem> styleItems = new ArrayList<>();
 
     private FrameLayout cameraPreview;
 
-    private android.hardware.Camera mCamera;
+    private Camera mCamera;
     private CameraPreview mCameraPreview;
-    private int numOfCamera;
-    private int cameraCurrentlyLocked;
 
-    // The first rear facing camera
-    private int defaultCameraId;
+    public static int currentCameraId;
+    public static int cameraRotation;
 
-    private int screenWidth, screenHeight;
-
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,19 +52,17 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
+        currentCameraId=getDefaultCameraId();
+        cameraRotation=getWindowManager().getDefaultDisplay().getRotation();
 
-        // 得到屏幕的大小
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-        screenHeight = display.getHeight();
-        screenWidth = display.getWidth();
-
+        mCameraPreview=new CameraPreview(this);
         cameraPreview = (FrameLayout) findViewById(R.id.camera_preview);
-        mCameraPreview = (CameraPreview) findViewById(R.id.my_camera_preview);
-
-        // 得到默认的相机ID
-        defaultCameraId = getDefaultCameraId();
-        cameraCurrentlyLocked = defaultCameraId;
+//        FrameLayout.LayoutParams lp_framelayout_camprev=new FrameLayout.LayoutParams
+//                (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//        lp_framelayout_camprev.gravity=Gravity.CENTER;
+//        mCameraPreview.setLayoutParams(lp_framelayout_camprev);
+//
+        cameraPreview.addView(mCameraPreview);
 
         initStyle();
 
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "getDefaultCameraId");
 
         int defaultId = -1;
+        int numOfCamera;
 
         // Find the total number of cameras available
         numOfCamera = Camera.getNumberOfCameras();
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onResume");
 
         // Open the default i.e. the first rear facing camera.
-        mCamera = getCameraInstance(cameraCurrentlyLocked);
+        mCamera = getCameraInstance(currentCameraId);
 
         mCameraPreview.setCamera(mCamera);
     }
@@ -163,9 +165,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onDestroy");
     }
 
-
     /**
-     * Check if this device has a camera
+     * If your application does not specifically require a camera using a manifest declaration,
+     * you should check to see if a camera is available at runtime.
      *
      * @param context
      * @return
@@ -191,4 +193,5 @@ public class MainActivity extends AppCompatActivity {
             styleItems.add(s3);
         }
     }
+
 }
