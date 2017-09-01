@@ -1,4 +1,4 @@
-package bjtu.makeupapp;
+package bjtu.makeupapp.components;
 
 import android.app.Activity;
 import android.content.Context;

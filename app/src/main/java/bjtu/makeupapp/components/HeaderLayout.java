@@ -21,16 +21,5 @@ public class HeaderLayout extends LinearLayout {
     public HeaderLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.header,this);
-
-        final ImageView img_camera_side= (ImageView) findViewById(R.id.img_camera_side);
-
-        // 注册图片按钮监听
-        img_camera_side.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(getContext(),"切换摄像头",Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }

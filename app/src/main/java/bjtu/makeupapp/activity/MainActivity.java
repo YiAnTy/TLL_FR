@@ -2,6 +2,7 @@ package bjtu.makeupapp.activity;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.CursorIndexOutOfBoundsException;
 import android.hardware.Camera;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -11,34 +12,38 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import bjtu.makeupapp.CameraPreview;
+import bjtu.makeupapp.components.CameraPreview;
 import bjtu.makeupapp.adapter.StyleAdapter;
 import bjtu.makeupapp.model.StyleItem;
+
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = "MainActivity";
 
-    private List<StyleItem> styleItems = new ArrayList<>();
-
     private FrameLayout cameraPreview;
+    private ImageView img_camera_side;
 
     private Camera mCamera;
     private CameraPreview mCameraPreview;
 
+    private List<StyleItem> styleItems = new ArrayList<>();
+
     public static int currentCameraId;
     public static int cameraRotation;
+
+    private static final int CAMERA_FRONT=Camera.CameraInfo.CAMERA_FACING_FRONT;
+    private static final int CAMERA_BACK=Camera.CameraInfo.CAMERA_FACING_BACK;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -52,11 +57,12 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
+        cameraPreview = (FrameLayout) findViewById(R.id.camera_preview);
+        img_camera_side= (ImageView) findViewById(R.id.img_camera_side);
+
         currentCameraId=getDefaultCameraId();
         cameraRotation=getWindowManager().getDefaultDisplay().getRotation();
-
         mCameraPreview=new CameraPreview(this);
-        cameraPreview = (FrameLayout) findViewById(R.id.camera_preview);
 //        FrameLayout.LayoutParams lp_framelayout_camprev=new FrameLayout.LayoutParams
 //                (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 //        lp_framelayout_camprev.gravity=Gravity.CENTER;
@@ -73,6 +79,19 @@ public class MainActivity extends AppCompatActivity {
         StyleAdapter styleAdapter = new StyleAdapter(styleItems);
         recyclerView.setAdapter(styleAdapter);
 
+        // 注册图片按钮（切换摄像头）监听
+        img_camera_side.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getBaseContext(),"切换摄像头",Toast.LENGTH_SHORT).show();
+                try {
+                    changeCameraSide();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     /**
@@ -94,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < numOfCamera; i++) {
             Camera.getCameraInfo(i, cameraInfo);
             Log.d(LOG_TAG, "camera info: " + cameraInfo.orientation);
-            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            if (cameraInfo.facing == CAMERA_FRONT) {
                 defaultId = i;
             }
         }
@@ -140,6 +159,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             Log.e(LOG_TAG, "Camera is not available");
         }
+
+        currentCameraId=cameraId;
 
         return cam; // returns null if camera is unavailable
     }
@@ -192,6 +213,19 @@ public class MainActivity extends AppCompatActivity {
             StyleItem s3 = new StyleItem(R.drawable.style_three,"御姐妆");
             styleItems.add(s3);
         }
+    }
+
+    private void changeCameraSide() throws IOException {
+        mCamera.stopPreview();
+        mCamera.release();
+
+        if(currentCameraId == CAMERA_FRONT){
+            mCamera = getCameraInstance(CAMERA_BACK);
+        }else if(currentCameraId == CAMERA_BACK){
+            mCamera = getCameraInstance(CAMERA_FRONT);
+        }
+
+        mCameraPreview.setCamera(mCamera);
     }
 
 }
