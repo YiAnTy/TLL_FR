@@ -1,10 +1,12 @@
 package bjtu.makeupapp.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -12,6 +14,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import bjtu.makeupapp.activity.R;
+import bjtu.makeupapp.manager.StyleManager;
 import bjtu.makeupapp.model.StyleItem;
 
 /**
@@ -53,6 +56,10 @@ public class StyleAdapter extends RecyclerView.Adapter<StyleAdapter.ViewHolder> 
                 //TODO 点击选择妆容，在显示界面显示相应妆容
                 Toast.makeText(v.getContext(),"你选择了"+styleItem.getName(),Toast.LENGTH_SHORT)
                         .show();
+
+                StyleManager.getInstance()
+                        .setStyleItems(styleItem);
+
             }
         });
         return holder;

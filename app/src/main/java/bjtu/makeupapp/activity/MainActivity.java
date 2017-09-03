@@ -11,10 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -23,16 +26,20 @@ import java.util.List;
 
 import bjtu.makeupapp.components.CameraPreview;
 import bjtu.makeupapp.adapter.StyleAdapter;
+import bjtu.makeupapp.manager.StyleManager;
 import bjtu.makeupapp.model.StyleItem;
 
 import static java.security.AccessController.getContext;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements StyleManager.TextListener {
 
     public static final String LOG_TAG = "MainActivity";
 
     private FrameLayout cameraPreview;
     private ImageView img_camera_side;
+    private ImageView cancel;
+    private ImageView sure;
+    private TextView name;
 
     private Camera mCamera;
     private CameraPreview mCameraPreview;
@@ -44,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int CAMERA_FRONT=Camera.CameraInfo.CAMERA_FACING_FRONT;
     private static final int CAMERA_BACK=Camera.CameraInfo.CAMERA_FACING_BACK;
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -70,14 +78,46 @@ public class MainActivity extends AppCompatActivity {
 //
         cameraPreview.addView(mCameraPreview);
 
+        //妆容选择初始化
         initStyle();
-
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         StyleAdapter styleAdapter = new StyleAdapter(styleItems);
         recyclerView.setAdapter(styleAdapter);
+
+        //底部样式初始化
+        cancel = (ImageView)findViewById(R.id.img_cancel);
+        sure = (ImageView)findViewById(R.id.img_sure);
+        name = (TextView)findViewById(R.id.style_name);
+
+        //取消注册，返回素颜监听
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO 点叉查看素颜
+                Toast.makeText(getBaseContext(),"查看素颜",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //确认该妆容监听
+        sure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO 选择该妆容
+                Toast.makeText(getBaseContext(),"给出该妆容对应化妆步骤",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        //妆容名称更替,文本内容监听
+        StyleManager.Operater op = new StyleManager.Operater();
+
+        op.setTextListener(MainActivity.this);
+
+        op.doSomething();
+
 
         // 注册图片按钮（切换摄像头）监听
         img_camera_side.setOnClickListener(new View.OnClickListener() {
@@ -227,5 +267,8 @@ public class MainActivity extends AppCompatActivity {
 
         mCameraPreview.setCamera(mCamera);
     }
-
+    @Override
+    public void updateText() {
+        name.setText(StyleManager.getInstance().getStyleItems().getName());
+    }
 }
