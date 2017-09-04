@@ -26,12 +26,11 @@ import java.util.List;
 
 import bjtu.makeupapp.components.CameraPreview;
 import bjtu.makeupapp.adapter.StyleAdapter;
-import bjtu.makeupapp.manager.StyleManager;
 import bjtu.makeupapp.model.StyleItem;
 
 import static java.security.AccessController.getContext;
 
-public class MainActivity extends AppCompatActivity implements StyleManager.TextListener {
+public class MainActivity extends AppCompatActivity{
 
     public static final String LOG_TAG = "MainActivity";
 
@@ -45,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements StyleManager.Text
     private CameraPreview mCameraPreview;
 
     private List<StyleItem> styleItems = new ArrayList<>();
+
+
 
     public static int currentCameraId;
     public static int cameraRotation;
@@ -110,14 +111,6 @@ public class MainActivity extends AppCompatActivity implements StyleManager.Text
 
             }
         });
-
-        //妆容名称更替,文本内容监听
-        StyleManager.Operater op = new StyleManager.Operater();
-
-        op.setTextListener(MainActivity.this);
-
-        op.doSomething();
-
 
         // 注册图片按钮（切换摄像头）监听
         img_camera_side.setOnClickListener(new View.OnClickListener() {
@@ -267,8 +260,11 @@ public class MainActivity extends AppCompatActivity implements StyleManager.Text
 
         mCameraPreview.setCamera(mCamera);
     }
-    @Override
-    public void updateText() {
-        name.setText(StyleManager.getInstance().getStyleItems().getName());
+
+    public TextView getName(){
+        return name;
     }
+
+
+
 }

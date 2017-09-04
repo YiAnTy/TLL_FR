@@ -13,8 +13,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import bjtu.makeupapp.activity.MainActivity;
 import bjtu.makeupapp.activity.R;
-import bjtu.makeupapp.manager.StyleManager;
 import bjtu.makeupapp.model.StyleItem;
 
 /**
@@ -54,11 +54,8 @@ public class StyleAdapter extends RecyclerView.Adapter<StyleAdapter.ViewHolder> 
                 StyleItem styleItem = styleItems.get(postion);
 
                 //TODO 点击选择妆容，在显示界面显示相应妆容
-                Toast.makeText(v.getContext(),"你选择了"+styleItem.getName(),Toast.LENGTH_SHORT)
-                        .show();
-
-                StyleManager.getInstance()
-                        .setStyleItems(styleItem);
+                MainActivity mainActivity=(MainActivity)v.getContext();
+                mainActivity.getName().setText(styleItem.getName());
 
             }
         });
