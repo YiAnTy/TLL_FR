@@ -30,11 +30,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private SurfaceHolder mSurfaceHolder;
     private Camera mCamera;
 
+    private ProcessImageAndDrawResults mDraw;
+
     Size mPreviewSize;
     List<Camera.Size> mSupportedPreviewSizes;
 
-    public CameraPreview(Context context) {
+    private boolean mFinished;
+
+    public CameraPreview(Context context,ProcessImageAndDrawResults draw) {
         super(context);
+        mDraw = draw;
         init();
     }
 
@@ -74,13 +79,47 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         Log.d(LOG_TAG, "surfaceCreated");
 
+        mFinished = false;
+
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
             mCamera.setPreviewDisplay(surfaceHolder);
             mCamera.startPreview();
+
+            // Preview callback used whenever new viewfinder frame is available
+            mCamera.setPreviewCallback(new Camera.PreviewCallback() {
+                public void onPreviewFrame(byte[] data, Camera camera) {
+                    if ( (mDraw == null) || mFinished )
+                        return;
+
+                    if (mDraw.mYUVData == null) {
+                        // Initialize the draw-on-top companion
+                        Camera.Parameters params = camera.getParameters();
+                        mDraw.mImageWidth = params.getPreviewSize().width;
+                        mDraw.mImageHeight = params.getPreviewSize().height;
+                        mDraw.mRGBData = new byte[3 * mDraw.mImageWidth * mDraw.mImageHeight];
+                        mDraw.mYUVData = new byte[data.length];
+                    }
+
+                    // Pass YUV data to draw-on-top companion
+                    System.arraycopy(data, 0, mDraw.mYUVData, 0, data.length);
+                    mDraw.invalidate();
+                }
+            });
         } catch (IOException e) {
             Log.d(LOG_TAG, "Error setting camera preview: " + e.getMessage());
+            if (mCamera != null) {
+                mCamera.release();
+                mCamera = null;
+            }
         }
+
+        /*
+        if (mDraw == null)
+        	((MainActivity)mContext).showMessage("surfaceCreated; mDraw == null");
+        else
+        	((MainActivity)mContext).showMessage("surfaceCreated; mDraw != null");
+        */
 
     }
 
@@ -91,7 +130,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         Log.d(LOG_TAG, "surfaceDestroyed");
 
+        mFinished = true;
+
         if (null != mCamera) {
+            mCamera.setPreviewCallback(null);
             mCamera.stopPreview();
         }
     }
@@ -128,6 +170,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
             mCamera.setParameters(parameters);
             setCameraDisplayOrientation(MainActivity.cameraRotation,MainActivity.currentCameraId,mCamera);
+            mDraw.rotated = true;
 
             Log.d(LOG_TAG, "camera set parameters successfully!: "
                     + parameters);

@@ -1,33 +1,41 @@
 package bjtu.makeupapp.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.database.CursorIndexOutOfBoundsException;
 import android.hardware.Camera;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.luxand.FSDK;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import bjtu.makeupapp.components.CameraPreview;
 import bjtu.makeupapp.adapter.StyleAdapter;
+import bjtu.makeupapp.components.CameraPreview;
+import bjtu.makeupapp.components.ProcessImageAndDrawResults;
 import bjtu.makeupapp.model.StyleItem;
 
-import static java.security.AccessController.getContext;
-
 public class MainActivity extends AppCompatActivity {
+
+    public static boolean sIsShowingProcessedFrameOnly = true;
+    public static boolean sIsUsingRenderScript = true;
+    public static boolean sIsRotatingWithRenderScript = true && sIsUsingRenderScript;
 
     public static final String LOG_TAG = "MainActivity";
 
@@ -36,16 +44,55 @@ public class MainActivity extends AppCompatActivity {
 
     private Camera mCamera;
     private CameraPreview mCameraPreview;
+    private ProcessImageAndDrawResults mDraw;
+    private boolean mIsFailed = false;
 
     private List<StyleItem> styleItems = new ArrayList<>();
 
     public static int currentCameraId;
     public static int cameraRotation;
 
+    public static float sDensity = 1.0f;
+
     private static final int CAMERA_FRONT=Camera.CameraInfo.CAMERA_FACING_FRONT;
     private static final int CAMERA_BACK=Camera.CameraInfo.CAMERA_FACING_BACK;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    private static final String KeyOfFSDK="d9GsVchpIt49Mr/Euq1tUtor0Zn4bR6uPmv+hc0X2cOnhGfZzEAQcMgMZK/UJnstf+3rRBCF2URjLaY" +
+            "vvu7FSMHe2makJVmB6+P5FA3sIVEhRvoibCqSN8IOHrOeDyYsDctxXi/ShcXAs6ErfTEVsTMiHsdDgphn/xmKdhLP/kw=";
+
+    public void showErrorAndClose(String error, int code) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(error + ": " + code)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                        //android.os.Process.killProcess(android.os.Process.myPid());
+                    }
+                })
+                .show();
+    }
+
+    public void showMessage(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                })
+                .setCancelable(false) // cancel with button only
+                .show();
+    }
+
+    private void resetTrackerParameters() {
+        int errpos[] = new int[1];
+        FSDK.SetTrackerMultipleParameters(mDraw.mTracker, "ContinuousVideoFeed=true;FacialFeatureJitterSuppression=0;RecognitionPrecision=1;Threshold=0.996;Threshold2=0.9995;ThresholdFeed=0.97;MemoryLimit=2000;HandleArbitraryRotations=false;DetermineFaceRotationAngle=false;InternalResizeWidth=70;FaceDetectionThreshold=3;", errpos);
+        if (errpos[0] != 0) {
+            showErrorAndClose("Error setting tracker parameters, position", errpos[0]);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,13 +109,39 @@ public class MainActivity extends AppCompatActivity {
 
         currentCameraId=getDefaultCameraId();
         cameraRotation=getWindowManager().getDefaultDisplay().getRotation();
-        mCameraPreview=new CameraPreview(this);
+        sDensity = getResources().getDisplayMetrics().scaledDensity;
+
+        int res = FSDK.ActivateLibrary(KeyOfFSDK);
+        if (res != FSDK.FSDKE_OK) {
+            mIsFailed = true;
+            showErrorAndClose("FaceSDK activation failed", res);
+        } else {
+            FSDK.Initialize();
+
+            // Lock orientation
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+            // Camera layer and drawing layer
+            mDraw = new ProcessImageAndDrawResults(getBaseContext());
+            mCameraPreview=new CameraPreview(this,mDraw);
+            mDraw.mTracker = new FSDK.HTracker();
+            res = FSDK.CreateTracker(mDraw.mTracker);
+            if (FSDK.FSDKE_OK != res) {
+                showErrorAndClose("Error creating tracker", res);
+            }
+            resetTrackerParameters();
+
+
 //        FrameLayout.LayoutParams lp_framelayout_camprev=new FrameLayout.LayoutParams
 //                (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 //        lp_framelayout_camprev.gravity=Gravity.CENTER;
 //        mCameraPreview.setLayoutParams(lp_framelayout_camprev);
 //
-        cameraPreview.addView(mCameraPreview);
+            cameraPreview.addView(mCameraPreview);
+            cameraPreview.addView(mDraw,
+                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        }
 
         initStyle();
 
@@ -140,6 +213,10 @@ public class MainActivity extends AppCompatActivity {
         mCamera = getCameraInstance(currentCameraId);
 
         mCameraPreview.setCamera(mCamera);
+
+        if (mIsFailed)
+            return;
+        resumeProcessingFrames();
     }
 
     /**
@@ -178,12 +255,35 @@ public class MainActivity extends AppCompatActivity {
             mCamera.release();
             mCamera = null;
         }
+
+        if (mIsFailed)
+            return;
+        pauseProcessingFrames();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy");
+    }
+
+    private void pauseProcessingFrames() {
+        mDraw.mStopping = 1;
+
+        // It is essential to limit wait time, because stopped will not be set to 0, if no frames are feeded to mDraw
+        for (int i = 0; i < 100; ++i) {
+            if (mDraw.mStopped != 0)
+                break;
+            try {
+                Thread.sleep(10);
+            } catch (Exception ex) {
+            }
+        }
+    }
+
+    private void resumeProcessingFrames() {
+        mDraw.mStopped = 0;
+        mDraw.mStopping = 0;
     }
 
     /**
@@ -229,3 +329,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
+
+
