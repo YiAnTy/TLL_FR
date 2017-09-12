@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MakeUpApp.iml" filepath="$PROJECT_DIR$/MakeUpApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/TLL_FR.iml" filepath="$PROJECT_DIR$/TLL_FR.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TTL.iml" filepath="$PROJECT_DIR$/TTL.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

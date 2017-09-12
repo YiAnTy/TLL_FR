@@ -20,7 +20,7 @@
         android:layout_weight="1"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="妆容名字"
+        android:text="烟熏妆"
         android:textColor="@android:color/black"
         android:textSize="24sp"/>
 

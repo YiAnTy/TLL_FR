@@ -62,6 +62,13 @@ public class StyleAdapter extends RecyclerView.Adapter<StyleAdapter.ViewHolder> 
         return holder;
     }
 
+    public void turnToNext(int position,MainActivity v){
+        StyleItem styleItem = styleItems.get(position);
+
+        //TODO 点击选择妆容，在显示界面显示相应妆容
+        v.getName().setText(styleItem.getName());
+    }
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         StyleItem styleItem = styleItems.get(position);

@@ -3,6 +3,7 @@ package bjtu.makeupapp.activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
@@ -16,6 +17,9 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -34,7 +38,7 @@ import bjtu.makeupapp.components.CameraPreview;
 import bjtu.makeupapp.components.ProcessImageAndDrawResults;
 import bjtu.makeupapp.model.StyleItem;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
 
     public static boolean sIsShowingProcessedFrameOnly = true;
     public static boolean sIsUsingRenderScript = true;
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity{
     private boolean mIsFailed = false;
 
     private List<StyleItem> styleItems = new ArrayList<>();
-
+    private StyleAdapter styleAdapter;
 
 
     public static int currentCameraId;
@@ -67,6 +71,50 @@ public class MainActivity extends AppCompatActivity{
 
     private static final String KeyOfFSDK="d9GsVchpIt49Mr/Euq1tUtor0Zn4bR6uPmv+hc0X2cOnhGfZzEAQcMgMZK/UJnstf+3rRBCF2URjLaY" +
             "vvu7FSMHe2makJVmB6+P5FA3sIVEhRvoibCqSN8IOHrOeDyYsDctxXi/ShcXAs6ErfTEVsTMiHsdDgphn/xmKdhLP/kw=";
+
+    private static final int FLING_MIN_DISTANCE = 50;   //最小距离
+    private static final int FLING_MIN_VELOCITY = 0;    //最小速度
+    private int position;                                  //当前妆容
+    private GestureDetector mGestureDetector;
+    //手势监听器
+    GestureDetector.SimpleOnGestureListener myGestureListener = new GestureDetector.SimpleOnGestureListener(){
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            Log.e("滑动手势", "开始滑动");
+            float x = e1.getX()-e2.getX();
+            float x2 = e2.getX()-e1.getX();
+            if(x>FLING_MIN_DISTANCE&&Math.abs(velocityX)>FLING_MIN_VELOCITY){
+                Toast.makeText(MainActivity.this, "向左手势", Toast.LENGTH_SHORT).show();
+               // startActivity(new Intent(MainActivity.this,MainActivity.class));
+                position=position+1;
+                if(position>=0 && position<6) {
+                    styleAdapter.turnToNext(position, MainActivity.this);
+                }
+                else
+                {
+                    position=position-1;
+                    Toast.makeText(MainActivity.this, "已是最后一个妆容", Toast.LENGTH_SHORT).show();
+                }
+            }else if(x2>FLING_MIN_DISTANCE&&Math.abs(velocityX)>FLING_MIN_VELOCITY){
+                Toast.makeText(MainActivity.this, "向右手势", Toast.LENGTH_SHORT).show();
+                position=position-1;
+                if(position>=0 && position<6) {
+                    styleAdapter.turnToNext(position, MainActivity.this);
+                }
+                else
+                {
+                    position=position+1;
+                    Toast.makeText(MainActivity.this, "已是第一个妆容", Toast.LENGTH_SHORT).show();
+                }
+            }
+            return false;
+        }
+    };
+
+    public boolean onTouch(View v, MotionEvent event) {
+        // TODO Auto-generated method stub
+        return mGestureDetector.onTouchEvent(event);
+    }
 
     public void showErrorAndClose(String error, int code) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -107,7 +155,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate");
         setContentView(R.layout.activity_main);
-
+        mGestureDetector = new GestureDetector(this, myGestureListener);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
@@ -152,13 +200,14 @@ public class MainActivity extends AppCompatActivity{
 
         }
 
+
         //妆容选择初始化
         initStyle();
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        StyleAdapter styleAdapter = new StyleAdapter(styleItems);
+        styleAdapter = new StyleAdapter(styleItems);
         recyclerView.setAdapter(styleAdapter);
 
         //底部样式初始化
@@ -198,6 +247,12 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         });
+
+        //加载手势监听
+
+        cameraPreview.setOnTouchListener(this);
+        cameraPreview.setLongClickable(true);
+
     }
 
     /**
