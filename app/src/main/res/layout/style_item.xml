@@ -6,6 +6,6 @@
     android:id="@+id/make_up_image"
     android:layout_width="80dp"
     android:layout_height="80dp"
-    android:src="@drawable/test_make_up"
+    android:src="@drawable/test"
     android:layout_gravity="center_horizontal"/>
 </LinearLayout>
