@@ -18,6 +18,14 @@
 
     </FrameLayout>
 
+    <ImageView
+        android:id="@+id/img_sure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/cloud"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"

@@ -69,12 +69,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private static final int CAMERA_FRONT=Camera.CameraInfo.CAMERA_FACING_FRONT;
     private static final int CAMERA_BACK=Camera.CameraInfo.CAMERA_FACING_BACK;
 
-    private static final String KeyOfFSDK="d9GsVchpIt49Mr/Euq1tUtor0Zn4bR6uPmv+hc0X2cOnhGfZzEAQcMgMZK/UJnstf+3rRBCF2URjLaY" +
-            "vvu7FSMHe2makJVmB6+P5FA3sIVEhRvoibCqSN8IOHrOeDyYsDctxXi/ShcXAs6ErfTEVsTMiHsdDgphn/xmKdhLP/kw=";
+    private static final String KeyOfFSDK="eCpaH942fsIrMIiRMM8Zl/kV3WLcmN1pXOV/WsIYdsq7XYVOBO2ynmQPvTSZo1sSWPm/cOfdEb4Y7IMegZNKDyzmRZgD5DgZjffmDHoCYUOf0tjjYOpJZTcYQnDqN4JXD45gpQopMiRbg1uUdTMWe6ofRsCXGXHGDTlq9c/+X7Q=";
 
     private static final int FLING_MIN_DISTANCE = 50;   //最小距离
     private static final int FLING_MIN_VELOCITY = 0;    //最小速度
-    private int position;                                  //当前妆容
+    private int position;   //当前妆容
     private GestureDetector mGestureDetector;
     //手势监听器
     GestureDetector.SimpleOnGestureListener myGestureListener = new GestureDetector.SimpleOnGestureListener(){
@@ -84,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             float x = e1.getX()-e2.getX();
             float x2 = e2.getX()-e1.getX();
             if(x>FLING_MIN_DISTANCE&&Math.abs(velocityX)>FLING_MIN_VELOCITY){
-                Toast.makeText(MainActivity.this, "向左手势", Toast.LENGTH_SHORT).show();
                // startActivity(new Intent(MainActivity.this,MainActivity.class));
                 position=position+1;
                 if(position>=0 && position<6) {
@@ -96,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                     Toast.makeText(MainActivity.this, "已是最后一个妆容", Toast.LENGTH_SHORT).show();
                 }
             }else if(x2>FLING_MIN_DISTANCE&&Math.abs(velocityX)>FLING_MIN_VELOCITY){
-                Toast.makeText(MainActivity.this, "向右手势", Toast.LENGTH_SHORT).show();
                 position=position-1;
                 if(position>=0 && position<6) {
                     styleAdapter.turnToNext(position, MainActivity.this);
@@ -160,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if (actionBar != null) {
             actionBar.hide();
         }
+
 
         cameraPreview = (FrameLayout) findViewById(R.id.camera_preview);
         img_camera_side= (ImageView) findViewById(R.id.img_camera_side);
