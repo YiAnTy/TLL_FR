@@ -65,8 +65,9 @@ public class MainActivity extends AppCompatActivity{
     private static final int CAMERA_FRONT=Camera.CameraInfo.CAMERA_FACING_FRONT;
     private static final int CAMERA_BACK=Camera.CameraInfo.CAMERA_FACING_BACK;
 
-    private static final String KeyOfFSDK="d9GsVchpIt49Mr/Euq1tUtor0Zn4bR6uPmv+hc0X2cOnhGfZzEAQcMgMZK/UJnstf+3rRBCF2URjLaY" +
-            "vvu7FSMHe2makJVmB6+P5FA3sIVEhRvoibCqSN8IOHrOeDyYsDctxXi/ShcXAs6ErfTEVsTMiHsdDgphn/xmKdhLP/kw=";
+    private static final String KeyOfFSDK="eCpaH942fsIrMIiRMM8Zl/kV3WLcmN1pXOV/WsIYdsq7XYVOBO2ynmQPvTSZo1sSW" +
+            "Pm/cOfdEb4Y7IMegZNKDyzmRZgD5DgZjffmDHoCYUOf0tjjYOpJZTcYQnDqN4JXD45gpQopMiRbg1uUdTMWe6ofRsCXGXHG" +
+            "DTlq9c/+X7Q=";
 
     public void showErrorAndClose(String error, int code) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
