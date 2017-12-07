@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private static final int CAMERA_FRONT=Camera.CameraInfo.CAMERA_FACING_FRONT;
     private static final int CAMERA_BACK=Camera.CameraInfo.CAMERA_FACING_BACK;
 
-    private static final String KeyOfFSDK="eCpaH942fsIrMIiRMM8Zl/kV3WLcmN1pXOV/WsIYdsq7XYVOBO2ynmQPvTSZo1sSWPm/cOfdEb4Y7IMegZNKDyzmRZgD5DgZjffmDHoCYUOf0tjjYOpJZTcYQnDqN4JXD45gpQopMiRbg1uUdTMWe6ofRsCXGXHGDTlq9c/+X7Q=";
+    private static final String KeyOfFSDK="qjkauXSSdwRteQhIAxTtFIowOjQOGWqKj8gKV6pbE4s4KYytL9CXUbJ+uvjf3rWhfqYqAHOu4ScUf2snBxnBg0XBfuTBopZGKkfylrojixzVBvM/tHkIm3xeRrbGMOQyeADE7H5TM7JXIdli8rFzndHib1T8lhwsy98BSC1OYjY=";
 
     private static final int FLING_MIN_DISTANCE = 50;   //最小距离
     private static final int FLING_MIN_VELOCITY = 0;    //最小速度
